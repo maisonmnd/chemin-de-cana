@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Chemin de Cana</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#285A9B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cana">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icones/icone-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icones/apple-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Manrope:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+
+/* Mise en page : une colonne de lecture (720 px), barre du haut collante, cinq onglets en bas.
+   L'eau et le vin de Cana : bleu de l'eau, rouge du vin, pierre des jarres ; la couleur liturgique du jour en filet. */
+:root{
+  --bg:#EDF0F4; --surface:#FFFFFF; --sunken:#E2E7EE; --ink:#16202E; --muted:#596476; --line:#D3DAE3;
+  --eau:#285A9B; --eau-soft:#DCE6F4; --on-eau:#FFFFFF;
+  --vin:#8A2445; --vin-soft:#F4DEE5; --or:#97700F; --pierre:#B7AD9E; --pierre-fonce:#8C8273;
+  --ok:#2E7D4F; --lit:#2E7D4F;
+  --f-display:'Marcellus','Cormorant Garamond',Georgia,serif;
+  --f-texte:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --f-ui:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --r:14px; --r-s:10px;
+  --ombre:0 1px 2px rgba(22,32,46,.06),0 4px 14px rgba(22,32,46,.05);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1219; --surface:#151C26; --sunken:#1C2532; --ink:#E6EBF2; --muted:#9AA6B7; --line:#273243;
+  --eau:#88AFE6; --eau-soft:#1B2B43; --on-eau:#0D1219;
+  --vin:#E58BA6; --vin-soft:#3A1A27; --or:#D9B358; --pierre:#6F685E; --pierre-fonce:#8D8576;
+  --ok:#6CC28F; --ombre:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0D1219; --surface:#151C26; --sunken:#1C2532; --ink:#E6EBF2; --muted:#9AA6B7; --line:#273243;
+  --eau:#88AFE6; --eau-soft:#1B2B43; --on-eau:#0D1219;
+  --vin:#E58BA6; --vin-soft:#3A1A27; --or:#D9B358; --pierre:#6F685E; --pierre-fonce:#8D8576;
+  --ok:#6CC28F; --ombre:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-ui);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--eau)}
+:focus-visible{outline:2px solid var(--eau);outline-offset:2px;border-radius:6px}
+h1,h2,h3{text-wrap:balance;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* Barre du haut */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px}
+.marque{font-family:var(--f-display);font-size:20px;letter-spacing:.02em;white-space:nowrap}
+.top .date{margin-left:auto;text-align:right;font-size:12.5px;color:var(--muted);line-height:1.3;min-width:0}
+.top .date b{color:var(--ink);font-weight:600;display:block}
+.filet{height:3px;background:var(--lit)}
+.sync{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--pierre);display:inline-block}
+.sync.ok i{background:var(--ok)}
+
+/* Onglets */
+.onglets{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.onglets .in{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.onglets button{background:none;border:0;padding:8px 2px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11.5px;color:var(--muted);font-weight:600}
+.onglets svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.onglets button[aria-current="page"]{color:var(--eau)}
+
+main{padding-block:18px 28px}
+.vue{display:grid;gap:22px}
+.sous{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.sous button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-weight:600;font-size:13.5px;white-space:nowrap;color:var(--muted)}
+.sous button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.eyebrow{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700}
+.titre-section{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.titre-section h3{font-family:var(--f-display);font-weight:400;font-size:21px}
+.titre-section .note{font-size:12.5px;color:var(--muted)}
+.carte{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--ombre)}
+.pad{padding:16px}
+.muted{color:var(--muted)}
+.petit{font-size:13px}
+.num{font-variant-numeric:tabular-nums}
+
+/* Héros : les six jarres */
+.heros{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:center;padding:18px}
+@media (max-width:560px){.heros{grid-template-columns:1fr}}
+.jarres svg{width:100%;height:auto;display:block}
+.grade h2{font-family:var(--f-display);font-weight:400;font-size:28px;line-height:1.15;margin:4px 0 6px}
+.grade .verset{font-family:var(--f-texte);font-style:italic;color:var(--muted);margin:0 0 12px;font-size:15px}
+.chiffres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.chiffres div{background:var(--sunken);border-radius:var(--r-s);padding:8px 10px}
+.chiffres b{display:block;font-size:20px;font-variant-numeric:tabular-nums;line-height:1.2}
+.chiffres span{font-size:11.5px;color:var(--muted)}
+.barre{height:6px;border-radius:9px;background:var(--sunken);overflow:hidden;margin-top:12px}
+.barre i{display:block;height:100%;background:linear-gradient(90deg,var(--eau),var(--vin));border-radius:9px;transition:width .8s ease}
+.prochain{font-size:12.5px;color:var(--muted);margin-top:6px}
+
+/* Rendez-vous du jour */
+.rdv{display:grid;gap:10px}
+.rdv .carte{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px}
+.heure{font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;background:var(--eau-soft);color:var(--eau);border-radius:8px;padding:6px 8px;text-align:center;min-width:64px;line-height:1.2}
+.rdv .vin .heure{background:var(--vin-soft);color:var(--vin)}
+.rdv b{display:block}
+.rdv .s{font-size:13px;color:var(--muted)}
+.lien{background:none;border:0;color:var(--eau);font-weight:700;font-size:13px;padding:6px 4px;white-space:nowrap}
+
+/* Programme du jour */
+.moment{display:grid;gap:0}
+.moment+.moment{margin-top:4px}
+.moment .lab{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700;padding:12px 16px 4px}
+.devoir{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 16px;border-top:1px solid var(--line)}
+.moment .lab+.devoir{border-top:0}
+.devoir .t{background:none;border:0;padding:0;text-align:left;min-width:0}
+.devoir .t b{display:block;font-weight:600}
+.devoir .t small{display:block;color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}
+.devoir.fait .t b{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--pierre)}
+.qui{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.puce{border:1.5px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;gap:5px;min-height:32px}
+.puce::before{content:"";width:12px;height:12px;border-radius:50%;border:1.5px solid currentColor;flex:none}
+.puce[aria-pressed="true"]{background:var(--eau);border-color:var(--eau);color:var(--on-eau)}
+.puce[aria-pressed="true"]::before{background:currentColor;box-shadow:inset 0 0 0 2px var(--eau)}
+.puce.vin[aria-pressed="true"]{background:var(--vin);border-color:var(--vin)}
+.puce.vin[aria-pressed="true"]::before{box-shadow:inset 0 0 0 2px var(--vin)}
+.puce:disabled{opacity:.45;cursor:default}
+
+/* Semaine */
+.semaine{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.jour-s{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-s);padding:8px 6px;min-height:92px;display:flex;flex-direction:column;gap:4px;text-align:left}
+.jour-s.auj{border-color:var(--eau);box-shadow:inset 0 0 0 1px var(--eau)}
+.jour-s .j{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.jour-s .n{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.jour-s .e{font-size:10.5px;line-height:1.25;border-radius:5px;padding:2px 4px;background:var(--eau-soft);color:var(--eau);font-weight:600;overflow-wrap:anywhere}
+.jour-s .e.vin{background:var(--vin-soft);color:var(--vin)}
+.jour-s .e.or{background:transparent;color:var(--or);padding:0}
+.jour-s .pt{height:4px;border-radius:4px;background:var(--sunken);margin-top:auto;overflow:hidden}
+.jour-s .pt i{display:block;height:100%;background:var(--eau)}
+@media (max-width:560px){.semaine{grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.jour-s{padding:6px 4px;min-height:84px}.jour-s .e{font-size:9.5px}}
+
+/* Étapes à venir */
+.etapes{display:grid}
+.etape{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;padding:11px 16px;border-top:1px solid var(--line);align-items:center}
+.etape:first-child{border-top:0}
+.etape .j{font-weight:700;font-variant-numeric:tabular-nums;color:var(--eau);font-size:15px}
+.etape.vin .j{color:var(--vin)}
+.etape small{display:block;color:var(--muted);font-size:12.5px}
+
+/* Lectures */
+.nav-date{display:flex;align-items:center;gap:8px}
+.nav-date button{border:1px solid var(--line);background:var(--surface);border-radius:10px;width:40px;height:40px;font-size:18px;display:grid;place-items:center}
+.nav-date .lbl{flex:1;min-width:0;text-align:center}
+.nav-date .lbl b{display:block;font-size:15px}
+.nav-date .lbl span{font-size:12.5px;color:var(--muted)}
+.nav-date input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+.pastille{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
+.pastille i{width:10px;height:10px;border-radius:50%;background:var(--lit);display:inline-block;box-shadow:0 0 0 1px var(--line)}
+.lecture{padding:0;overflow:hidden}
+.lecture summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.lecture summary::-webkit-details-marker{display:none}
+.lecture summary .chev{transition:transform .2s;color:var(--muted)}
+.lecture[open] summary .chev{transform:rotate(90deg)}
+.lecture .ttl{font-family:var(--f-texte);font-size:17px;line-height:1.35;margin-top:2px}
+.lecture .ref{font-size:12.5px;color:var(--muted);font-weight:600}
+.texte{font-family:var(--f-texte);font-size:17.5px;line-height:1.65;padding:0 16px 16px;max-width:65ch}
+.texte p{margin:0 0 .8em}
+.texte .intro{font-style:italic;color:var(--muted);font-size:15px}
+.texte .refrain{color:var(--vin);font-weight:600}
+.texte .acclam{color:var(--muted);font-size:15px;border-left:3px solid var(--line);padding-left:10px;margin-bottom:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 16px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 13px;font-weight:600;font-size:13.5px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink)}
+.btn.plein{background:var(--eau);border-color:var(--eau);color:var(--on-eau)}
+.btn.vin{background:var(--vin);border-color:var(--vin);color:var(--on-eau)}
+.btn:disabled{opacity:.5}
+
+/* Mémo */
+.champ{display:grid;gap:6px}
+.champ label{font-size:13px;font-weight:700}
+.champ .ligne{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:start}
+textarea,input[type=text],input[type=date],input[type=time],select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;font-size:15px;line-height:1.45}
+textarea{min-height:76px;resize:vertical;font-family:var(--f-texte);font-size:16px}
+.mic{border:1px solid var(--line);background:var(--surface);border-radius:10px;width:42px;height:42px;display:grid;place-items:center}
+.mic svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7}
+.mic[aria-pressed="true"]{background:var(--vin);border-color:var(--vin);color:var(--on-eau)}
+.grille-champs{display:grid;gap:14px}
+.enreg{font-size:12px;color:var(--muted);min-height:1em}
+
+/* Listes repliées */
+.liste{display:grid}
+.ligne-r{border-top:1px solid var(--line)}
+.ligne-r:first-child{border-top:0}
+.ligne-r>summary{list-style:none;cursor:pointer;padding:12px 16px;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center}
+.ligne-r>summary::-webkit-details-marker{display:none}
+.ligne-r .no{font-family:var(--f-display);font-size:20px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.ligne-r .quoi b{display:block;font-weight:600;line-height:1.35}
+.ligne-r .quoi small{display:block;color:var(--muted);font-size:12.5px}
+.ligne-r .etat{font-size:12px;font-weight:700;white-space:nowrap;text-align:right}
+.ligne-r.passe .no{color:var(--pierre-fonce)}
+.ligne-r.prochaine{background:var(--eau-soft)}
+.ligne-r.prochaine .no{color:var(--eau)}
+.panneau{padding:4px 16px 16px;display:grid;gap:14px}
+.tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-radius:6px;padding:2px 6px;margin-right:6px;vertical-align:1px}
+.tag.ctrl{background:var(--vin-soft);color:var(--vin)}
+.tag.reco{background:var(--sunken);color:var(--or)}
+.tag.fin{background:var(--eau-soft);color:var(--eau)}
+.refs{display:flex;flex-wrap:wrap;gap:6px}
+.refs a{font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:8px;padding:4px 9px;text-decoration:none}
+.questions{margin:0;padding-left:20px;display:grid;gap:6px;font-family:var(--f-texte);font-size:16px}
+
+/* Prochaine séance */
+.prochaine-carte{padding:16px;display:grid;gap:12px;border-color:var(--eau)}
+.prochaine-carte h3{font-family:var(--f-display);font-weight:400;font-size:23px;line-height:1.2}
+.decompte{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.decompte b{font-size:30px;font-variant-numeric:tabular-nums;color:var(--eau);line-height:1}
+.deroule{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px}
+.deroule span:nth-child(odd){font-variant-numeric:tabular-nums;font-weight:700;color:var(--muted)}
+
+/* Cartes de révision */
+.cartes-rev{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.rev{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:14px;text-align:left;min-height:118px;display:flex;flex-direction:column;gap:8px}
+.rev .q{font-weight:700}
+.rev .r{font-family:var(--f-texte);font-size:15.5px;color:var(--ink)}
+.rev:not(.vue-r) .r{filter:blur(6px);user-select:none}
+.rev .indice{font-size:11.5px;color:var(--muted);margin-top:auto}
+.rev.vue-r{border-color:var(--eau)}
+
+/* Livret */
+.livret-ligne{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 16px}
+.livret-ligne-w{border-top:1px solid var(--line)}
+.mois-lbl+.livret-ligne-w{border-top:0}
+.livret-ligne-w>summary::-webkit-details-marker{display:none}
+.recap{display:grid;gap:8px}
+.recap small{display:block;color:var(--muted);font-size:12.5px}
+.recap b{display:block;font-family:var(--f-texte);font-weight:400;font-size:16px;line-height:1.35}
+.aller{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.aller input{width:auto;padding:6px 10px;font-size:14px}
+.livret-ligne.futur{opacity:.55}
+.livret-ligne.auj{background:var(--eau-soft)}
+.livret-ligne b{display:block;font-weight:600}
+.livret-ligne small{display:block;color:var(--muted);font-size:12.5px}
+.mois-lbl{padding:14px 16px 6px;font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700;border-top:1px solid var(--line)}
+.mois-lbl:first-child{border-top:0}
+.totaux{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.totaux{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.totaux div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.totaux b{display:block;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.2}
+.totaux span{font-size:12px;color:var(--muted)}
+
+/* Chapelet */
+.chapelet{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:18px;align-items:start;padding:16px}
+@media (max-width:640px){.chapelet{grid-template-columns:1fr}.chapelet .grains{max-width:300px;margin:0 auto;width:100%}}
+.grains svg{width:100%;height:auto;display:block;touch-action:manipulation;cursor:pointer}
+.grains circle{transition:fill .25s,r .25s}
+.priere-cour h3{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.2;margin:2px 0 6px}
+.priere-cour .compte{font-size:13px;color:var(--muted);font-weight:600}
+.priere-cour .corps{font-family:var(--f-texte);font-size:18px;line-height:1.6;margin:10px 0 14px;min-height:6em}
+.mystere{background:var(--vin-soft);border-radius:12px;padding:12px 14px;margin-top:10px}
+.mystere b{color:var(--vin)}
+.mystere p{margin:4px 0 0;font-size:14px}
+.ctrl-ch{display:flex;gap:8px;flex-wrap:wrap}
+.ctrl-ch .btn{padding:10px 16px}
+.rosaire{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.rosaire{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rosaire div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.rosaire div.fait{border-color:var(--vin);background:var(--vin-soft)}
+.rosaire b{display:block;font-size:14px}
+.rosaire span{font-size:12px;color:var(--muted)}
+
+/* Prières */
+.prieres{display:grid}
+.pr>summary{list-style:none;cursor:pointer;padding:13px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border-top:1px solid var(--line)}
+.prieres .pr:first-child>summary{border-top:0}
+.pr>summary::-webkit-details-marker{display:none}
+.pr>summary b{font-weight:600}
+.pr>summary small{display:block;color:var(--muted);font-size:12.5px}
+.pr .corps{font-family:var(--f-texte);font-size:17.5px;line-height:1.65;padding:0 16px 8px;white-space:pre-line;max-width:65ch}
+.pr .corps .cache{color:transparent;background:var(--sunken);border-radius:4px}
+.memoriser{display:flex;align-items:center;gap:10px;padding:0 16px 16px;flex-wrap:wrap}
+.memoriser input[type=range]{width:160px;accent-color:var(--vin)}
+
+/* Guides (couple, famille) */
+.guide{display:grid}
+.pas{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding:12px 16px;border-top:1px solid var(--line);align-items:start}
+.pas:first-child{border-top:0}
+.pas button.rond{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);font-weight:700;font-size:13px;color:var(--muted)}
+.pas.fait button.rond{background:var(--eau);border-color:var(--eau);color:var(--on-eau)}
+.pas b{display:block}
+.pas p{margin:3px 0 0;color:var(--muted);font-size:14px}
+.pas .cite{font-family:var(--f-texte);font-style:italic;color:var(--ink);font-size:16px}
+.roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.roles div{background:var(--sunken);border-radius:12px;padding:10px 12px}
+.roles span{display:block;font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.roles b{font-family:var(--f-display);font-weight:400;font-size:20px}
+
+/* Enfants */
+.enfants{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:620px){.enfants{grid-template-columns:1fr}}
+.enfant{padding:16px;display:grid;gap:10px;align-content:start}
+.enfant h3{font-family:var(--f-display);font-weight:400;font-size:24px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.enfant h3 span{font-family:var(--f-ui);font-size:13px;color:var(--muted)}
+.etoiles{color:var(--or);font-weight:700;font-size:13px}
+.sait{display:flex;flex-wrap:wrap;gap:6px}
+
+/* Bible */
+.livres{display:grid;gap:10px}
+.livre>summary{list-style:none;cursor:pointer;padding:9px 14px;display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line)}
+.livre>summary::-webkit-details-marker{display:none}
+.chap{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:6px;padding:4px 14px 14px}
+.chap a{display:grid;place-items:center;height:36px;border:1px solid var(--line);border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;font-variant-numeric:tabular-nums}
+.groupe-b{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700;padding:12px 14px 4px}
+.texte-m{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 16px;border-top:1px solid var(--line)}
+.texte-m:first-child{border-top:0}
+.texte-m a{font-weight:700;text-decoration:none}
+.texte-m span{display:block;font-family:var(--f-texte);font-size:15px;color:var(--muted)}
+.coeur{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.coeur[aria-pressed="true"]{background:var(--vin);border-color:var(--vin);color:var(--on-eau)}
+.rech{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+
+/* Claude */
+.ia{border:1px dashed var(--eau);border-radius:12px;padding:12px 14px;display:grid;gap:8px;background:var(--eau-soft)}
+.ia .rep{font-family:var(--f-texte);font-size:16px;line-height:1.55;white-space:pre-wrap}
+.ia .eyebrow{color:var(--eau)}
+
+.minuteur{display:flex;align-items:center;gap:12px}
+.minuteur b{font-size:28px;font-variant-numeric:tabular-nums;font-weight:700}
+.vide{padding:22px 16px;text-align:center;color:var(--muted)}
+.bandeau{background:var(--vin-soft);color:var(--vin);border-radius:12px;padding:10px 14px;font-size:13.5px;font-weight:600}
+.reglages{display:grid;gap:14px;padding:16px}
+.reglages .deux{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.copier{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.copier code{font-family:var(--f-ui);font-weight:700;user-select:all}
+.table{width:100%;border-collapse:collapse;font-size:14px}
+.table td{padding:8px 16px;border-top:1px solid var(--line)}
+.table tr:first-child td{border-top:0}
+.table td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.trois{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:720px){.trois{grid-template-columns:1fr}}
+.trois ul{margin:8px 0 0;padding-left:18px;display:grid;gap:5px;font-size:14px}
+.priere-fils{font-family:var(--f-texte);font-size:16.5px;line-height:1.6;white-space:pre-line;margin:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Entrée */
+.entree{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-left,0px)) 24px max(16px,env(safe-area-inset-right,0px));overflow-y:auto}
+.entree .boite{width:100%;max-width:380px;display:grid;gap:14px}
+.entree h1{font-family:var(--f-display);font-weight:400;font-size:34px;margin:0}
+.entree .jarre{width:64px;height:auto}
+.entree .msg{font-size:14px;min-height:1.4em;color:var(--vin);font-weight:600}
+.entree .note{font-size:13px;color:var(--muted)}
+.entree input{font-size:16px}
+.entree .btn{justify-content:center;padding:12px 16px;font-size:15px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div>
+      <div class="marque">Chemin de Cana</div>
+      <div class="sync" id="sync"><i></i><span>Sur cet appareil</span></div>
+    </div>
+    <div class="date" id="topDate"></div>
+  </div>
+  <div class="filet" id="filet"></div>
+</header>
+
+<main class="wrap" id="app" aria-live="polite"></main>
+
+<nav class="onglets" aria-label="Rubriques">
+  <div class="in">
+    <button data-nav="jour"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Aujourd'hui</button>
+    <button data-nav="parole"><svg viewBox="0 0 24 24"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5c-.8 0-1.5-.7-1.5-1.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/></svg>Parole</button>
+    <button data-nav="prier"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M12 15v4M10 17h4M12 19v3"/></svg>Prier</button>
+    <button data-nav="eglise"><svg viewBox="0 0 24 24"><path d="M12 2v4M10 4h4M5 21V11l7-5 7 5v10"/><path d="M10 21v-5a2 2 0 0 1 4 0v5M3 21h18"/></svg>Église</button>
+    <button data-nav="famille"><svg viewBox="0 0 24 24"><circle cx="8" cy="7" r="3"/><circle cx="16.5" cy="8.5" r="2.5"/><path d="M2.5 20c.6-3.6 2.7-5.5 5.5-5.5s4.9 1.9 5.5 5.5M13.5 15.3c.9-.5 1.9-.8 3-.8 2.4 0 4.2 1.7 4.7 4.9"/></svg>Famille</button>
+  </div>
+</nav>
+<div class="entree" id="entree">
+  <div class="boite">
+    <svg class="jarre" viewBox="0 0 60 96" aria-hidden="true"><defs><clipPath id="cjx"><path d="M18 10 h24 v5 c0 3 -3 4 -3 6 c11 4 17 15 17 31 c0 20 -8 33 -15 38 h-20 c-7 -5 -15 -18 -15 -38 c0 -16 6 -27 17 -31 c0 -2 -3 -3 -3 -6 z"/></clipPath></defs><path d="M18 10 h24 v5 c0 3 -3 4 -3 6 c11 4 17 15 17 31 c0 20 -8 33 -15 38 h-20 c-7 -5 -15 -18 -15 -38 c0 -16 6 -27 17 -31 c0 -2 -3 -3 -3 -6 z" style="fill:var(--sunken);stroke:var(--pierre-fonce)" stroke-width="1.4"/><rect clip-path="url(#cjx)" x="0" y="48" width="60" height="50" style="fill:var(--vin)"/><rect x="15" y="4" width="30" height="6" rx="2" style="fill:var(--pierre);stroke:var(--pierre-fonce)" stroke-width="1.2"/></svg>
+    <h1>Chemin de Cana</h1>
+    <div id="formEntree" class="grille-champs">
+      <div class="champ"><label for="eMail">Adresse e-mail</label><input type="email" id="eMail" autocomplete="username" inputmode="email"></div>
+      <div class="champ"><label for="eMdp">Mot de passe</label><input type="password" id="eMdp" autocomplete="current-password"></div>
+      <button class="btn plein" id="bEntrer">Entrer</button>
+      <button class="btn" id="bCreer">Première fois : créer mon accès</button>
+      <div class="msg" id="eMsg" role="alert"></div>
+      <p class="note">Une seule fois par téléphone. Ensuite l'application s'ouvre directement, même sans réseau.</p>
+    </div>
+    <div id="attente" hidden class="grille-champs">
+      <p>Votre accès est créé, mais l'adresse <b id="aMail"></b> n'est pas encore dans la famille.</p>
+      <p class="note">Demandez à un membre de l'ajouter dans Famille, puis Réglages, puis touchez Réessayer.</p>
+      <button class="btn plein" id="bReessayer">Réessayer</button>
+      <button class="btn" id="bSortir">Changer d'adresse</button>
+    </div>
+    <div id="chargeEntree" hidden class="note">Ouverture…</div>
+  </div>
+</div>
+<script src="vendor/supabase.js"></script>
+<script>
+"use strict";
+(function(){
+  const URL_SB = "https://uouhcsmfvqxioeamxbxs.supabase.co";
+  const CLE_PUB = "sb_publishable_RJAqZA1L4ZBN7GQoel_uQA_aavGF_Wv";
+  const $ = s => document.querySelector(s);
+  const lire = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const poser = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  let sb = null;
+  try { sb = window.supabase.createClient(URL_SB, CLE_PUB, {auth: {persistSession: true, autoRefreshToken: true, storageKey: "cana-auth", detectSessionInUrl: false}}); } catch (e) {}
+  window.CANA = {sb};
+
+  const voir = q => { $("#formEntree").hidden = q !== "form"; $("#attente").hidden = q !== "attente"; $("#chargeEntree").hidden = q !== "charge"; };
+  const msg = t => { $("#eMsg").textContent = t || ""; };
+
+  async function dechiffrer(cleB64){
+    const brut = Uint8Array.from(atob(cleB64), c => c.charCodeAt(0));
+    const cle = await crypto.subtle.importKey("raw", brut, "AES-GCM", false, ["decrypt"]);
+    const r = await fetch("app.enc", {cache: "no-cache"}).catch(() => fetch("app.enc"));
+    const buf = new Uint8Array(await r.arrayBuffer());
+    const clair = await crypto.subtle.decrypt({name: "AES-GCM", iv: buf.slice(0, 12)}, cle, buf.slice(12));
+    return new TextDecoder().decode(clair);
+  }
+  function lancer(code){
+    const s = document.createElement("script");
+    s.src = URL.createObjectURL(new Blob([code], {type: "text/javascript"}));
+    s.onload = () => { $("#entree").hidden = true; };
+    document.body.appendChild(s);
+  }
+  async function ouvrir(email){
+    voir("charge");
+    window.CANA.email = email || lire("cana-membre") || "";
+    let membre = !!email && lire("cana-membre") === email;
+    let cle = lire("cana-cle");
+    if (sb && email && navigator.onLine) {
+      const r = await sb.rpc("est_membre");
+      if (!r.error) membre = !!r.data;
+      if (!r.error && !membre) {
+        const a = await sb.rpc("aucun_membre");
+        if (!a.error && a.data) { const ins = await sb.from("membres").insert({email: email.toLowerCase()}); if (!ins.error) membre = true; }
+      }
+      if (membre) { const k = await sb.from("cle").select("valeur").eq("id", 1).maybeSingle(); if (k.data && k.data.valeur) cle = k.data.valeur; }
+    }
+    if (!membre && !(email == null && lire("cana-membre"))) { $("#aMail").textContent = email || ""; voir("attente"); return; }
+    if (!cle) { voir("form"); msg("L'application n'est pas encore prête. Réessayez dans un instant."); return; }
+    if (email) poser("cana-membre", email);
+    poser("cana-cle", cle);
+    try { lancer(await dechiffrer(cle)); } catch (e) { voir("form"); msg("Ouverture impossible. Vérifiez le réseau, puis réessayez."); }
+  }
+  async function demarrer(){
+    if (!sb) { if (lire("cana-cle") && lire("cana-membre")) return ouvrir(null); voir("form"); msg("Pas de réseau pour la première connexion."); return; }
+    let session = null;
+    try { session = (await sb.auth.getSession()).data.session; } catch (e) {}
+    if (session) return ouvrir(session.user.email);
+    if (!navigator.onLine && lire("cana-cle") && lire("cana-membre")) return ouvrir(null);
+    voir("form");
+  }
+  function erreurFr(e){
+    const m = (e && e.message) || "";
+    if (/invalid login|invalid credentials/i.test(m)) return "Adresse ou mot de passe incorrect.";
+    if (/already registered|already exists/i.test(m)) return "Cette adresse a déjà un accès : touchez Entrer.";
+    if (/password/i.test(m) && /6|short|weak|least/i.test(m)) return "Mot de passe trop court : 6 caractères au moins.";
+    if (/email/i.test(m) && /invalid/i.test(m)) return "Adresse e-mail incorrecte.";
+    if (/fetch|network/i.test(m)) return "Pas de réseau. Réessayez.";
+    return "Connexion impossible : " + m;
+  }
+  async function entrer(creer){
+    const email = ($("#eMail").value || "").trim().toLowerCase(), mdp = $("#eMdp").value || "";
+    if (!email || !mdp) { msg("Adresse et mot de passe, s'il vous plaît."); return; }
+    msg("");
+    const r = creer ? await sb.auth.signUp({email, password: mdp}) : await sb.auth.signInWithPassword({email, password: mdp});
+    if (r.error) { msg(erreurFr(r.error)); return; }
+    if (!r.data.session) { msg("Accès créé. Touchez Entrer."); return; }
+    ouvrir(r.data.session.user.email);
+  }
+  $("#bEntrer").addEventListener("click", () => entrer(false));
+  $("#bCreer").addEventListener("click", () => entrer(true));
+  $("#eMdp").addEventListener("keydown", e => { if (e.key === "Enter") entrer(false); });
+  $("#bReessayer").addEventListener("click", async () => { const s = (await sb.auth.getSession()).data.session; ouvrir(s ? s.user.email : null); });
+  $("#bSortir").addEventListener("click", async () => { await sb.auth.signOut().catch(() => {}); voir("form"); });
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  demarrer();
+})();
+</script>
+</body>
+</html>
