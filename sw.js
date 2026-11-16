@@ -1,5 +1,5 @@
-// Chemin de Cana, version 20261116173520
-const V = "cana-20261116173520";
+// Chemin de Cana, version 20261116183117
+const V = "cana-20261116183117";
 const COEUR = ["./","index.html","app.enc","vendor/supabase.js","manifest.webmanifest","icones/icone-192.png","icones/icone-512.png","icones/apple-180.png","lectures/2026-11.json","lectures/2026-12.json","lectures/2027-01.json","lectures/2027-02.json","lectures/2027-03.json","lectures/2027-04.json","lectures/2027-05.json","lectures/2027-06.json","lectures/2027-07.json","lectures/2027-08.json","lectures/index.json"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(V).then(c => c.addAll(COEUR)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
